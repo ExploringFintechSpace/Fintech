@@ -1,95 +1,92 @@
-<!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <title>Reverse Geocoding</title>
-    <style>
-      /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
-      #map {
-        height: 100%;
-      }
-      /* Optional: Makes the sample page fill the window. */
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      #floating-panel {
-        position: absolute;
-        top: 10px;
-        left: 25%;
-        z-index: 5;
-        background-color: #fff;
-        padding: 5px;
-        border: 1px solid #999;
-        text-align: center;
-        font-family: 'Roboto','sans-serif';
-        line-height: 30px;
-        padding-left: 10px;
-      }
-      #floating-panel {
-        position: absolute;
-        top: 5px;
-        left: 50%;
-        margin-left: -180px;
-        width: 350px;
-        z-index: 5;
-        background-color: #fff;
-        padding: 5px;
-        border: 1px solid #999;
-      }
-      #latlng {
-        width: 225px;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="floating-panel">
-      <input id="latlng" type="text" value="40.714224,-73.961452">
-      <input id="submit" type="button" value="Reverse Geocode">
-    </div>
-    <div id="map"></div>
-    <script>
-      function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 8,
-          center: {lat: 40.731, lng: -73.997}
-        });
-        var geocoder = new google.maps.Geocoder;
-        var infowindow = new google.maps.InfoWindow;
+     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            html {
+  font-family: "Avenir Next", Helevetica, sans-serif;
+  text-align: center;}
 
-        document.getElementById('submit').addEventListener('click', function() {
-          geocodeLatLng(geocoder, map, infowindow);
-        });
-      }
+body {margin: 0 auto;}
 
-      function geocodeLatLng(geocoder, map, infowindow) {
-        var input = document.getElementById('latlng').value;
-        var latlngStr = input.split(',', 2);
-        var latlng = {lat: parseFloat(latlngStr[0]), lng: parseFloat(latlngStr[1])};
-        geocoder.geocode({'location': latlng}, function(results, status) {
-          if (status === 'OK') {
-            if (results[0]) {
-              map.setZoom(11);
-              var marker = new google.maps.Marker({
-                position: latlng,
-                map: map
-              });
-              infowindow.setContent(results[0].formatted_address);
-              infowindow.open(map, marker);
-            } else {
-              window.alert('No results found');
-            }
-          } else {
-            window.alert('Geocoder failed due to: ' + status);
-          }
-        });
+h1,h2 {font-weight: 300;}
+        </style>
+        <title> Weather </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+     </head>
+
+     <body>
+
+
+        <h1><div id="temp"></div></h1>
+	<h2><div id="Summary"></div></h2>
+	<h3><div id="icon"></div></h3>
+<p id ="demo"></p>
+
+<script>
+var greeting;
+if(icon="rain"){
+greeting = "Its raining"
+document.getElementById("demo").innerHTML = greeting;
+}
+</script>
+
+
+        <h2><div id="location"></div></h2>
+	<h3><div id="map"></div></h3>
+	<h3><div id="remap"></div></h3>
+        
+</body>
+
+     <script>
+         function weather() {
+  var location = document.getElementById("location");
+  var map = document.getElementById("map");
+  var remap = document.getElementById("remap");
+  var apiKey2 = "8fb2a533f58f18d31e3aa1d2b98395f0";
+  var url = "https://api.darksky.net/forecast/";
+
+  navigator.geolocation.getCurrentPosition(success, error);
+
+  function success(position) {
+    latitude = position.coords.latitude;
+    longitude = position.coords.longitude;
+
+    location.innerHTML =
+      "Latitude is " + latitude +" "+ "Longitude is " + longitude+ " ";
+
+
+    $.getJSON(
+      url + apiKey2 + "/" + latitude + "," + longitude + "?callback=?",
+      function(data) {
+        $("#temp").html(data.currently.temperature + " F");
+        $("#Summary").html(data.daily.summary);
+	$("#icon").html(data.daily.icon);
+
       }
-    </script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2vdqyLGc9xdyk0yGHMdSZ5So7B3ZVSNs&callback=initMap">
-    </script>
-  </body>
-</html>
+);
+
+var img_url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=AIzaSyDji7Xfq3-P-DQBnewbPRqZH0GojSHJhsI";
+
+    $.getJSON(
+      img_url + "?callback=?",
+      function(data) {
+        $("#remap").html(data.formatted_address);
+        
+      }
+);
+
+  }
+
+  function error() {
+    location.innerHTML = "Unable to retrieve your location";
+  }
+
+
+
+  location.innerHTML = "Locating...";
+}
+weather();
+     </script>
+ 
+ </html>
